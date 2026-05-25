@@ -5,7 +5,9 @@
     "outDir": "./dist",
     "baseUrl": ".",
     "esModuleInterop": true,
-    "strict": true
+    "strict": true,
+    "skipLibCheck": true,
+
   },
-  "include": ["src", "../shared/types/**/*"]
+  "include": ["src/**/*"]
 }

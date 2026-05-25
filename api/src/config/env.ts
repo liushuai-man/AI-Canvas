@@ -4,5 +4,11 @@ dotenv.config();
 
 export const env = {
   notionToken: process.env.NOTION_TOKEN || '',
-  port: process.env.PORT || '8080'
+  port: process.env.PORT || '8080',
+  notionClientId: process.env.NOTION_CLIENT_ID || '',
+  notionClientSecret: process.env.NOTION_CLIENT_SECRET || '',
+  notionRedirectUri:
+    process.env.NOTION_REDIRECT_URI ||
+    'http://localhost:8080/api/notion/callback',
+  sessionSecret: process.env.SESSION_SECRET || 'your-secret-key-here',
 };

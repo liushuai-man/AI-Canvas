@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
 import { NotionService } from '../services/notionSave';
-import { NotionPageResponse } from '../../../shared/types/notion';
+import { UserService } from '../services/userService';
+import { NotionPageResponse } from '../types/notion';
 
 export class NotionController {
   static async saveToNotion(req: Request, res: Response) {
     try {
-      const { pageId, blocks } = req.body;
+      const { pageId, blocks, userId } = req.body;
 
       if (!pageId || !blocks) {
         return res
@@ -13,7 +14,19 @@ export class NotionController {
           .json({ success: false, error: 'Missing required fields' });
       }
 
-      const result = await NotionService.saveToNotion(pageId, blocks);
+      let accessToken;
+      if (userId) {
+        const user = UserService.getUser(userId);
+        if (user) {
+          accessToken = user.notionAccessToken;
+        }
+      }
+
+      const result = await NotionService.saveToNotion(
+        pageId,
+        blocks,
+        accessToken
+      );
 
       if (result.success) {
         res.status(200).json(result);
@@ -27,7 +40,17 @@ export class NotionController {
 
   static async getNotionPages(req: Request, res: Response<NotionPageResponse>) {
     try {
-      const results = await NotionService.getNotionPages();
+      const { userId } = req.query;
+
+      let accessToken;
+      if (userId && typeof userId === 'string') {
+        const user = UserService.getUser(userId);
+        if (user) {
+          accessToken = user.notionAccessToken;
+        }
+      }
+
+      const results = await NotionService.getNotionPages(accessToken);
 
       if (results.success) {
         res.status(200).json(results);
