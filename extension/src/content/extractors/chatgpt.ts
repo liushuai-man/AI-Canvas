@@ -38,8 +38,9 @@ export function extractChatGPT(): Block[] {
           '.flex.items-center.relative.text-token-text-secondary'
         )
         .forEach((h) => h.remove());
+      // 移除按钮和辅助元素，但保留图片和svg
       clone
-        .querySelectorAll('button, svg, .sr-only')
+        .querySelectorAll('button, .sr-only')
         .forEach((item) => item.remove());
 
       // 将 ChatGPT 的代码块标准化为纯文本，避免每行包裹元素导致换行丢失。

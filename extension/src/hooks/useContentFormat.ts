@@ -195,6 +195,40 @@ export function parseContentToBlocks(html: string): ContentBlock[] {
       return;
     }
 
+    // 处理图片标签
+    if (el.tagName === 'IMG') {
+      const src = el.getAttribute('src');
+      if (src && !src.startsWith('data:')) {
+        blocks.push({
+          id: crypto.randomUUID(),
+          type: 'image',
+          src: src,
+          alt: el.getAttribute('alt') || undefined,
+        });
+      }
+      return;
+    }
+
+    // 检查元素内部是否有图片
+    const images = el.querySelectorAll('img');
+    if (images.length > 0) {
+      images.forEach((img) => {
+        const src = img.getAttribute('src');
+        if (src && !src.startsWith('data:')) {
+          blocks.push({
+            id: crypto.randomUUID(),
+            type: 'image',
+            src: src,
+            alt: img.getAttribute('alt') || undefined,
+          });
+        }
+      });
+      // 如果只有图片，直接返回
+      if (el.textContent?.trim() === '' || el.children.length === images.length) {
+        return;
+      }
+    }
+
     if (el.tagName === 'TABLE') {
       const rows = Array.from(el.querySelectorAll('tr'));
 
@@ -259,6 +293,8 @@ export function formatContentBlock(block: ContentBlock): string {
       return `\`\`\`${block.language || ''}\n${block.code}\n\`\`\``;
     case 'inlineCode':
       return `\`${(block as any).code}\``;
+    case 'image':
+      return `![${block.alt || ''}](${block.src})`;
     case 'list':
       return block.items
         .map((item, index) =>

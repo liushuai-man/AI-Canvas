@@ -17,11 +17,8 @@ export default function CanvasArea() {
   const { width, theme } = useCanvasStore();
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-     if (!over || active.id === over.id) return;
-
-     if (over.data.current?.sortable.containerId === 'blocks') {
-       reorderBlocks(String(active.id), String(over.id));
-     }
+    if (!over || active.id === over.id) return;
+    reorderBlocks(String(active.id), String(over.id));
   };
 
   return (

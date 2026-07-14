@@ -10,6 +10,7 @@ import {
   ListBlock,
   TableBlock,
   InLineCodeBlock,
+  ImageBlock,
 } from '../../../../../shared/types/block';
 
 interface Props {
@@ -151,6 +152,18 @@ const ContentBlockRenderer: React.FC<Props> = ({ block }) => {
               ))}
             </tbody>
           </table>
+        </div>
+      );
+    case 'image':
+      const imageBlock = block as ImageBlock;
+      return (
+        <div className="my-4">
+          <img
+            src={imageBlock.src}
+            alt={imageBlock.alt || ''}
+            style={{ maxWidth: '100%', height: 'auto' }}
+            className="rounded-lg"
+          />
         </div>
       );
     default:

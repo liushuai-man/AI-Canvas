@@ -96,6 +96,12 @@ function buildMessageHtml(block: any) {
         );
       }
 
+      if (contentBlock.type === 'image') {
+        const alt = escapeHtml(contentBlock.alt || '');
+        const src = escapeHtml(contentBlock.src);
+        return `<img src="${src}" alt="${alt}" style="max-width: 100%; height: auto;" />`;
+      }
+
       return renderMarkdown([contentBlock]);
     })
     .join('\n');
@@ -202,6 +208,8 @@ function contentBlocksToMarkdown(contentBlocks: any[]): string {
             .join('\n')}`;
         case 'inlineCode':
           return `\`${block.code}\``;
+        case 'image':
+          return `![${block.alt || ''}](${block.src})`;
         default:
           return '';
       }
@@ -263,6 +271,8 @@ export function toTXT(content: any[]) {
                 .map((row: string[]) => row.join('\t'))
                 .join('\n');
               return `${headers}\n${rows}`;
+            case 'image':
+              return `[图片: ${block.alt || block.src}]`;
             default:
               return '';
           }
@@ -294,20 +304,39 @@ export function toPDF(content: any[]) {
   const exportContainer = document.createElement('div');
   exportContainer.innerHTML = buildExportBody(content);
 
+  // 添加必要的样式以确保正确渲染
+  exportContainer.style.cssText = `
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 850px;
+    z-index: 99999;
+    background: white;
+    pointer-events: none;
+  `;
+
   document.body.appendChild(exportContainer);
 
-  html2pdf()
-    .from(exportContainer)
-    .set({
-      margin: 15,
-      filename: 'ai-canvas.pdf',
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { format: 'a4', orientation: 'portrait', unit: 'mm' },
-    })
-    .save()
-    .finally(() => {
-      document.body.removeChild(exportContainer);
-    });
+  // 等待 DOM 更新后再生成 PDF
+  setTimeout(() => {
+    html2pdf()
+      .from(exportContainer)
+      .set({
+        margin: 15,
+        filename: 'ai-canvas.pdf',
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff',
+        },
+        jsPDF: { format: 'a4', orientation: 'portrait', unit: 'mm' },
+      })
+      .save()
+      .finally(() => {
+        document.body.removeChild(exportContainer);
+      });
+  }, 100);
 }
 
 /**

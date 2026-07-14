@@ -17,9 +17,15 @@ export default function ContentBlockRow({ block, contentBlock }: Props) {
       key={contentBlock.id}
       ref={setNodeRef}
       {...attributes}
-      {...listeners}
       style={style}
+      className="relative group"
     >
+      <div
+        {...listeners}
+        className="absolute -left-6 top-1/2 -translate-y-1/2 cursor-grab opacity-0 group-hover:opacity-100 transition-opacity select-none"
+      >
+        ⠿
+      </div>
       <ContentBlock block={block} contentBlock={contentBlock} />
     </div>
   );

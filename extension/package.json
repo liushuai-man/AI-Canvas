@@ -2,7 +2,7 @@
   "name": "ai-canvas",
   "description": "AI Canvas Extension",
   "private": true,
-  "version": "1.0.0",
+  "version": "0.0.2",
   "type": "module",
   "author": "刘帅",
   "license": "MIT",
