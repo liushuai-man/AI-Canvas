@@ -18,14 +18,14 @@ export function injectImportButton() {
   });
 
   btn.onclick = async () => {
-    const count = await importConversation();
-    btn.innerText = `✅ 已导出 ${count} 条`;
+    await importConversation();
+    btn.innerText = '✅ 已成功导出';
 
     setTimeout(() => {
       chrome.runtime.sendMessage({
         action: 'openCanvas',
       });
-    btn.innerText = '自定义导出';
+      btn.innerText = '自定义导出';
     }, 1000);
   };
   document.body.appendChild(btn);

@@ -1,5 +1,6 @@
 import BlockItem from '../BlockItem/BlockItem';
 import { useDragSort } from '../../../../../src/hooks/useDragSort';
+import { GripVertical } from 'lucide-react';
 import type { Block } from '../../../../../../shared/types/block';
 
 type Props = {
@@ -20,8 +21,11 @@ export default function BlockRow({
       style={style}
       className="group relative flex items-start px-4"
     >
-      <div {...listeners} className="cursor-grab px-2 select-none">
-        ☰
+      <div
+        {...listeners}
+        className="cursor-grab px-1 py-8 text-gray-400 hover:text-gray-600 transition-colors opacity-0 group-hover:opacity-100"
+      >
+        <GripVertical size={16} />
       </div>
       <div className="flex-shrink-0 w-8 flex justify-center pt-8">
         <input

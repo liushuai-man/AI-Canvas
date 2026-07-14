@@ -1,5 +1,6 @@
 import ContentBlock from '../BlockItem/components/ContentBlock';
 import { useDragSort } from '../../../../hooks/useDragSort';
+import { GripVertical } from 'lucide-react';
 import type {
   Block,
   ContentBlock as ContentBlockType,
@@ -22,9 +23,9 @@ export default function ContentBlockRow({ block, contentBlock }: Props) {
     >
       <div
         {...listeners}
-        className="absolute -left-6 top-1/2 -translate-y-1/2 cursor-grab opacity-0 group-hover:opacity-100 transition-opacity select-none"
+        className="absolute -left-7 top-1/2 -translate-y-1/2 cursor-grab opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-gray-600"
       >
-        ⠿
+        <GripVertical size={14} />
       </div>
       <ContentBlock block={block} contentBlock={contentBlock} />
     </div>

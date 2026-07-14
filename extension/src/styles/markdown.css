@@ -69,6 +69,16 @@
   margin-bottom: 10px;
 }
 
+.markdown-body a {
+  color: #2563eb;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.markdown-body a:hover {
+  color: #1d4ed8;
+}
+
 .markdown-body img {
   max-width: 100%;
 }

@@ -306,37 +306,44 @@ export function toPDF(content: any[]) {
 
   // 添加必要的样式以确保正确渲染
   exportContainer.style.cssText = `
-    position: fixed;
-    left: 0;
+    position: absolute;
+    left: -9999px;
     top: 0;
-    width: 850px;
-    z-index: 99999;
+    width: 800px;
     background: white;
-    pointer-events: none;
   `;
 
   document.body.appendChild(exportContainer);
 
   // 等待 DOM 更新后再生成 PDF
   setTimeout(() => {
+    const element =
+      exportContainer.querySelector('.ai-canvas-export') || exportContainer;
+
     html2pdf()
-      .from(exportContainer)
+      .from(element)
       .set({
-        margin: 15,
+        margin: [15, 15, 15, 15],
         filename: 'ai-canvas.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
         html2canvas: {
           scale: 2,
           useCORS: true,
           logging: false,
           backgroundColor: '#ffffff',
+          windowWidth: 800,
         },
         jsPDF: { format: 'a4', orientation: 'portrait', unit: 'mm' },
       })
       .save()
-      .finally(() => {
+      .then(() => {
+        document.body.removeChild(exportContainer);
+      })
+      .catch((err: any) => {
+        console.error('PDF export failed:', err);
         document.body.removeChild(exportContainer);
       });
-  }, 100);
+  }, 200);
 }
 
 /**

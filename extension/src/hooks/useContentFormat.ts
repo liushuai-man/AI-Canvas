@@ -197,8 +197,8 @@ export function parseContentToBlocks(html: string): ContentBlock[] {
 
     // 处理图片标签
     if (el.tagName === 'IMG') {
-      const src = el.getAttribute('src');
-      if (src && !src.startsWith('data:')) {
+      const src = el.getAttribute('src') || el.getAttribute('data-src') || el.getAttribute('data-original');
+      if (src) {
         blocks.push({
           id: crypto.randomUUID(),
           type: 'image',
@@ -207,26 +207,6 @@ export function parseContentToBlocks(html: string): ContentBlock[] {
         });
       }
       return;
-    }
-
-    // 检查元素内部是否有图片
-    const images = el.querySelectorAll('img');
-    if (images.length > 0) {
-      images.forEach((img) => {
-        const src = img.getAttribute('src');
-        if (src && !src.startsWith('data:')) {
-          blocks.push({
-            id: crypto.randomUUID(),
-            type: 'image',
-            src: src,
-            alt: img.getAttribute('alt') || undefined,
-          });
-        }
-      });
-      // 如果只有图片，直接返回
-      if (el.textContent?.trim() === '' || el.children.length === images.length) {
-        return;
-      }
     }
 
     if (el.tagName === 'TABLE') {

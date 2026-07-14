@@ -27,10 +27,10 @@ export function extractChatGPT(): Block[] {
   return Array.from(nodes)
     .map((el) => {
       const rawRole = el.getAttribute('data-message-author-role');
-      const markdownContainer = el.querySelector('.markdown') || el;
-      const clone = markdownContainer.cloneNode(true) as HTMLElement;
+      // 使用整个消息元素来确保能获取到所有图片
+      const clone = el.cloneNode(true) as HTMLElement;
       const originalPres = Array.from(
-        markdownContainer.querySelectorAll('pre')
+        el.querySelectorAll('pre')
       ) as HTMLElement[];
 
       clone
@@ -42,6 +42,19 @@ export function extractChatGPT(): Block[] {
       clone
         .querySelectorAll('button, .sr-only')
         .forEach((item) => item.remove());
+
+      // 处理图片 - 确保图片 src 正确
+      clone.querySelectorAll('img').forEach((img) => {
+        // 如果图片没有 src 或者 src 是空的，尝试从 data-src 或其他属性获取
+        if (!img.getAttribute('src')) {
+          const dataSrc = img.getAttribute('data-src') || img.getAttribute('data-original');
+          if (dataSrc) {
+            img.setAttribute('src', dataSrc);
+          }
+        }
+        // 移除懒加载属性，确保图片可以被正确处理
+        img.removeAttribute('loading');
+      });
 
       // 将 ChatGPT 的代码块标准化为纯文本，避免每行包裹元素导致换行丢失。
       clone.querySelectorAll('pre').forEach((pre, index) => {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useExport } from '../../hooks/useExport';
 import { useBlockStore, useSessionStore } from '../../stores/index';
-import { Brain, CheckCircle2, ExternalLink } from 'lucide-react';
+import { Brain, CheckCircle2 } from 'lucide-react';
 import '../../styles/global.css';
 import ExportCanvas from './components/ExportCanvas';
 import QuickExport from './components/QuickExport';
@@ -60,17 +60,6 @@ export default function PopupPage() {
       });
     }
   };
-
-  const openInNewWindow = async () => {
-    await chrome.windows.create({
-      url: chrome.runtime.getURL('popup.html'),
-      type: 'popup',
-      width: 380,
-      height: 600,
-      focused: true,
-    });
-    window.close();
-  };
   if (loading) {
     return <div className="w-64 p-4">加载中...</div>;
   }
@@ -92,13 +81,6 @@ export default function PopupPage() {
             exportFns={{ exportPdf, exportMD, exportTxt, exportHtml }}
           />
           <SaveNotion onGoNotion={() => setPage('notion')} />
-          <button
-            onClick={openInNewWindow}
-            className="w-full mt-3 py-2 px-4 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-gray-600 flex items-center justify-center gap-2 transition-colors"
-          >
-            <ExternalLink size={14} />
-            在新窗口中打开
-          </button>
         </div>
       )}
       {page === 'notion' && (
