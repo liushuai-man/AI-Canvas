@@ -197,13 +197,32 @@ export function parseContentToBlocks(html: string): ContentBlock[] {
 
     // 处理图片标签
     if (el.tagName === 'IMG') {
-      const src = el.getAttribute('src') || el.getAttribute('data-src') || el.getAttribute('data-original');
-      if (src) {
+      let src = el.getAttribute('src') || el.getAttribute('data-src') || el.getAttribute('data-original') || '';
+      src = src.replace(/`/g, '').trim();
+      
+      let alt = el.getAttribute('alt') || '';
+      alt = alt.replace(/`/g, '').trim();
+      
+      // 过滤掉 favicon 和小图标
+      const isFavicon = src.includes('favicon') || 
+                       src.includes('google.com/s2/favicons') ||
+                       src.includes('favicon.ico');
+      
+      // 检查图片是否在链接旁边（通常是小图标）
+      const parentLink = el.closest('a');
+      const isLinkIcon = parentLink && el.width < 50 && el.height < 50;
+      
+      // 检查图片尺寸（排除太小的图片）
+      const imgWidth = el.naturalWidth || el.width;
+      const imgHeight = el.naturalHeight || el.height;
+      const isTooSmall = imgWidth < 100 || imgHeight < 100;
+      
+      if (src && src.startsWith('http') && !isFavicon && !isLinkIcon && !isTooSmall) {
         blocks.push({
           id: crypto.randomUUID(),
           type: 'image',
           src: src,
-          alt: el.getAttribute('alt') || undefined,
+          alt: alt || undefined,
         });
       }
       return;

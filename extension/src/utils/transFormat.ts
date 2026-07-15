@@ -3,6 +3,8 @@ import MarkdownIt from 'markdown-it';
 import markdownItHighlightjs from 'markdown-it-highlightjs';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github.css';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 const md = new MarkdownIt({
   html: false,
@@ -152,6 +154,7 @@ function buildExportBody(content: any[]) {
     .ai-canvas-export .export-message { margin-bottom: 24px; }
     .ai-canvas-export .export-message-content > *:last-child { margin-bottom: 0; }
     .ai-canvas-export .export-code-block { margin: 16px 0; }
+    .ai-canvas-export img { max-width: 100%; height: auto; display: block; margin: 16px 0; border-radius: 8px; }
     ${buildHighlightThemeCss()}
   </style>
   <article class="ai-canvas-export">
@@ -183,7 +186,10 @@ export function stripMarkdown(md: string): string {
 /**
  * contentBlocks 转换为 Markdown
  */
-function contentBlocksToMarkdown(contentBlocks: any[]): string {
+function contentBlocksToMarkdown(
+  contentBlocks: any[],
+  imagePathMap?: Map<string, string>
+): string {
   if (!contentBlocks || contentBlocks.length === 0) return '';
 
   return contentBlocks
@@ -209,7 +215,8 @@ function contentBlocksToMarkdown(contentBlocks: any[]): string {
         case 'inlineCode':
           return `\`${block.code}\``;
         case 'image':
-          return `![${block.alt || ''}](${block.src})`;
+          const imageSrc = imagePathMap?.get(block.src) || block.src;
+          return `![${block.alt || ''}](${imageSrc})`;
         default:
           return '';
       }
@@ -221,7 +228,10 @@ function contentBlocksToMarkdown(contentBlocks: any[]): string {
 /**
  * 转 Markdown 字符串（用于 MD 直接导出）
  */
-export const blocksToMarkdown = (content: any[]) => {
+export const blocksToMarkdown = (
+  content: any[],
+  imagePathMap?: Map<string, string>
+) => {
   if (!content || content.length === 0) return '';
 
   const exportDate = new Date().toLocaleString();
@@ -234,7 +244,10 @@ export const blocksToMarkdown = (content: any[]) => {
     const sourceStr = b.source ? ` | 来源: ${b.source}` : '';
 
     const header = `### ${roleIcon} ${roleName}`;
-    const messageContent = contentBlocksToMarkdown(b.contentBlocks);
+    const messageContent = contentBlocksToMarkdown(
+      b.contentBlocks,
+      imagePathMap
+    );
     const footer = `> ${timeStr}${sourceStr}`;
 
     return `${header}\n\n${messageContent}\n\n${footer}\n\n---`;
@@ -246,7 +259,7 @@ export const blocksToMarkdown = (content: any[]) => {
 /**
  * 转 TXT
  */
-export function toTXT(content: any[]) {
+export function toTXT(content: any[], imagePathMap?: Map<string, string>) {
   return content
     .map((b) => {
       const role = b.role === 'user' ? '[用户]' : '[AI助手]';
@@ -272,7 +285,8 @@ export function toTXT(content: any[]) {
                 .join('\n');
               return `${headers}\n${rows}`;
             case 'image':
-              return `[图片: ${block.alt || block.src}]`;
+              const imageSrc = imagePathMap?.get(block.src) || block.src;
+              return `[图片: ${block.alt || imageSrc}]`;
             default:
               return '';
           }
