@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useExport } from '../../hooks/useExport';
-import { useBlockStore, useSessionStore } from '../../stores/index';
+import { useBlockStore, useSessionStore, useNotionStore } from '../../stores/index';
 import { Brain, CheckCircle2 } from 'lucide-react';
 import '../../styles/global.css';
 import ExportCanvas from './components/ExportCanvas';
@@ -11,6 +11,7 @@ export default function PopupPage() {
   const { blocks, initBlocks } = useBlockStore();
   const [page, setPage] = useState<'home' | 'notion'>('home');
   const { loadConversationId } = useSessionStore();
+  const { loadNotionPageId } = useNotionStore();
   const { exportMD, exportTxt, exportPdf, exportHtml } = useExport(blocks);
   const messageCount = blocks.length;
   console.log('[Popup Canvas] blocks:', blocks);
@@ -19,12 +20,13 @@ export default function PopupPage() {
     const init = async () => {
       await loadConversationId();
       await initBlocks();
+      await loadNotionPageId();
       setLoading(false);
       console.log('[Popup Canvas] blocks:', blocks);
     };
 
     init();
-  }, [initBlocks]);
+  }, [initBlocks, loadNotionPageId]);
   useEffect(() => {
     const listener = (changes: any, areaName: string) => {
       if (areaName !== 'local') return;
@@ -39,15 +41,24 @@ export default function PopupPage() {
     };
   }, [initBlocks]);
   const openCanvas = async () => {
-    const tabs = await chrome.tabs.query({
-      active: true,
-      currentWindow: true,
-    });
-    if (tabs.length > 0) {
-      await chrome.tabs.sendMessage(tabs[0].id!, {
-        action: 'importConversation',
+    try {
+      const tabs = await chrome.tabs.query({
+        active: true,
+        currentWindow: true,
       });
+      if (tabs.length > 0) {
+        try {
+          await chrome.tabs.sendMessage(tabs[0].id!, {
+            action: 'importConversation',
+          });
+        } catch (err) {
+          console.log('Content script not available, skipping import');
+        }
+      }
+    } catch (err) {
+      console.error('Error importing conversation:', err);
     }
+
     const canvasTabs = await chrome.tabs.query({
       url: chrome.runtime.getURL('canvas.html*'),
     });

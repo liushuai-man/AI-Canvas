@@ -1,6 +1,8 @@
 import { Client } from '@notionhq/client';
 import { env } from '../config/env';
 import type { NotionPageData } from '../types/notion';
+import type { ContentBlock } from '../types/block';
+import { toNotionBlocks } from '../utils/toNotionBlocks';
 
 export class NotionService {
   private static getClient(accessToken?: string): Client {
@@ -42,18 +44,28 @@ export class NotionService {
 
   static async saveToNotion(
     pageId: string,
-    blocks: any[],
+    blocks: ContentBlock[],
     accessToken?: string
   ): Promise<{ success: boolean; data?: any; error?: string }> {
     const notion = this.getClient(accessToken);
 
     try {
-      const results: any[] = [];
+      // 先将 ContentBlock 转换为 Notion Block 格式
+      const notionBlocks = toNotionBlocks(blocks);
 
-      for (const block of blocks) {
+      if (notionBlocks.length === 0) {
+        return { success: true, data: [] };
+      }
+
+      // Notion API 每次最多追加 100 个 block，分批发送
+      const results: any[] = [];
+      const batchSize = 100;
+
+      for (let i = 0; i < notionBlocks.length; i += batchSize) {
+        const batch = notionBlocks.slice(i, i + batchSize);
         const response = await notion.blocks.children.append({
           block_id: pageId,
-          children: [block],
+          children: batch,
         });
         results.push(response);
       }

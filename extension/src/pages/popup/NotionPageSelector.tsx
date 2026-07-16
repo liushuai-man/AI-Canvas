@@ -13,22 +13,31 @@ export default function NotionPageSelector({
 }: NotionPageSelectorProps) {
   const [pages, setPages] = useState<NotionPageData[]>([]);
   const { getNotionPages, isLoading, error } = useNotion();
-  const { setNotionPageId, loadDefaultPage, notionPageId } = useNotionStore();
+  const {
+    setNotionPageId,
+    loadDefaultPage,
+    loadNotionPageId,
+    notionPageId,
+    userId,
+  } = useNotionStore();
 
   async function fetchPages() {
-    const fetchedPages = await getNotionPages();
+    const currentUserId = useNotionStore.getState().userId;
+    const fetchedPages = await getNotionPages(currentUserId || undefined);
     setPages(fetchedPages);
     await loadDefaultPage(fetchedPages);
   }
-  
+
   useEffect(() => {
-    fetchPages();
+    loadNotionPageId().then(() => {
+      fetchPages();
+    });
   }, []);
-  
+
   const handleRefresh = () => {
     fetchPages();
   };
-  
+
   const handlePageSelect = async (page: NotionPageData) => {
     await setNotionPageId(page.id);
     onBack();
@@ -79,10 +88,10 @@ export default function NotionPageSelector({
           <div className="space-y-2">
             {pages.map((page) => (
               <div
-              key={page.id}
-              className={`p-3 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors ${page.id === notionPageId ? 'bg-blue-100' : 'bg-blue-50'}`}
-              onClick={() => handlePageSelect(page)}
-            >
+                key={page.id}
+                className={`p-3 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors ${page.id === notionPageId ? 'bg-blue-100' : 'bg-blue-50'}`}
+                onClick={() => handlePageSelect(page)}
+              >
                 <div className="flex items-center gap-3">
                   <FileText size={16} className="text-blue-500" />
                   <span className="text-sm">{page.title}</span>

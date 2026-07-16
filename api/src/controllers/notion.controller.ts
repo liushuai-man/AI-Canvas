@@ -41,13 +41,18 @@ export class NotionController {
   static async getNotionPages(req: Request, res: Response<NotionPageResponse>) {
     try {
       const { userId } = req.query;
+      console.log('[getNotionPages] userId from query:', userId);
 
       let accessToken;
       if (userId && typeof userId === 'string') {
         const user = UserService.getUser(userId);
+        console.log('[getNotionPages] user found:', !!user);
         if (user) {
           accessToken = user.notionAccessToken;
+          console.log('[getNotionPages] using OAuth token:', accessToken?.substring(0, 20) + '...');
         }
+      } else {
+        console.log('[getNotionPages] no userId, will use env token');
       }
 
       const results = await NotionService.getNotionPages(accessToken);

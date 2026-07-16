@@ -45,20 +45,16 @@ export default function SaveNotion({ onGoNotion }: SaveNotionProps) {
           <span className="text-gray-400 text-xs">?</span>
         </span>
         {!userId ? (
-          <button
-            onClick={handleLogin}
-            className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700"
-          >
-            <LogIn size={12} />
-            登录
-          </button>
+          <span className="flex items-center gap-1 text-xs text-gray-400">
+            未登录
+          </span>
         ) : (
           <button
             onClick={handleLogout}
             className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700"
           >
             <LogOut size={12} />
-            退出
+            退出登录
           </button>
         )}
       </div>

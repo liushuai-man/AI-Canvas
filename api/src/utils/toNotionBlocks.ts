@@ -108,6 +108,20 @@ export function toNotionBlocks(blocks: ContentBlock[]) {
           };
 
         case 'list':
+          if (block.ordered) {
+            return block.items.map((item: string) => ({
+              object: 'block' as const,
+              type: 'numbered_list_item' as const,
+              numbered_list_item: {
+                rich_text: [
+                  {
+                    type: 'text' as const,
+                    text: { content: item },
+                  },
+                ],
+              },
+            }));
+          }
           return block.items.map((item: string) => ({
             object: 'block' as const,
             type: 'bulleted_list_item' as const,
@@ -115,13 +129,68 @@ export function toNotionBlocks(blocks: ContentBlock[]) {
               rich_text: [
                 {
                   type: 'text' as const,
-                  text: {
-                    content: item,
-                  },
+                  text: { content: item },
                 },
               ],
             },
           }));
+
+        case 'table':
+          // Notion table 需要先创建 table block，然后添加 table_row
+          // 由于 API 限制，我们将其转换为文本格式
+          const tableLines: string[] = [];
+          if (block.headers.length > 0) {
+            tableLines.push(block.headers.join(' | '));
+            tableLines.push(block.headers.map(() => '---').join(' | '));
+          }
+          block.rows.forEach((row: string[]) => {
+            tableLines.push(row.join(' | '));
+          });
+          return {
+            object: 'block' as const,
+            type: 'paragraph' as const,
+            paragraph: {
+              rich_text: [
+                {
+                  type: 'text' as const,
+                  text: {
+                    content: tableLines.join('\n'),
+                  },
+                },
+              ],
+            },
+          };
+
+        case 'inlineCode':
+          return {
+            object: 'block' as const,
+            type: 'paragraph' as const,
+            paragraph: {
+              rich_text: [
+                {
+                  type: 'text' as const,
+                  text: {
+                    content: block.code,
+                  },
+                  annotations: {
+                    code: true,
+                  },
+                },
+              ],
+            },
+          };
+
+        case 'image':
+          return {
+            object: 'block' as const,
+            type: 'image' as const,
+            image: {
+              type: 'external' as const,
+              external: {
+                url: block.src,
+              },
+            },
+          };
 
         default:
           return [];

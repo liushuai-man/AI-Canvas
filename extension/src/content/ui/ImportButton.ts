@@ -18,13 +18,22 @@ export function injectImportButton() {
   });
 
   btn.onclick = async () => {
-    await importConversation();
-    btn.innerText = '✅ 已成功导出';
+    try {
+      await importConversation();
+      btn.innerText = '✅ 已成功导出';
+    } catch (err) {
+      console.error('Import conversation error:', err);
+      btn.innerText = '❌ 导出失败';
+    }
 
     setTimeout(() => {
-      chrome.runtime.sendMessage({
-        action: 'openCanvas',
-      });
+      try {
+        chrome.runtime.sendMessage({
+          action: 'openCanvas',
+        });
+      } catch (err) {
+        console.error('Send message error:', err);
+      }
       btn.innerText = '自定义导出';
     }, 1000);
   };

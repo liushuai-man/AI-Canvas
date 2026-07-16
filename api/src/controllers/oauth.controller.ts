@@ -27,18 +27,26 @@ export class OAuthController {
           .json({ success: false, error: 'Missing authorization code' });
       }
 
+      console.log('OAuth callback received with code:', code.substring(0, 10) + '...');
+      console.log('Using client_id:', env.notionClientId);
+      console.log('Using redirect_uri:', env.notionRedirectUri);
+
+      // 使用 Basic Auth 格式（Notion 要求）
+      const credentials = Buffer.from(
+        `${env.notionClientId}:${env.notionClientSecret}`
+      ).toString('base64');
+
       const tokenResponse = await axios.post(
         'https://api.notion.com/v1/oauth/token',
         {
           grant_type: 'authorization_code',
           code,
           redirect_uri: env.notionRedirectUri,
-          client_id: env.notionClientId,
-          client_secret: env.notionClientSecret,
         },
         {
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Basic ${credentials}`,
           },
         }
       );
@@ -54,18 +62,31 @@ export class OAuthController {
 
       const userId = owner?.user?.id || `user_${Date.now()}`;
 
+      console.log('OAuth token exchange successful');
+      console.log('User ID:', userId);
+      console.log('Access token (first 20 chars):', access_token.substring(0, 20) + '...');
+      console.log('Has refresh token:', !!refresh_token);
+      console.log('Expires in:', expires_in, 'seconds');
+
+      const expiresAt = expires_in
+        ? Date.now() + expires_in * 1000
+        : undefined;
+
       UserService.createUser(
         userId,
         access_token,
         refresh_token,
-        Date.now() + expires_in * 1000
+        expiresAt
       );
 
       res.redirect(
         `http://localhost:8080/api/notion/auth-success?userId=${userId}`
       );
-    } catch (error) {
-      console.error('OAuth callback error:', error);
+    } catch (error: any) {
+      console.error('OAuth callback error:', error.message);
+      if (error.response) {
+        console.error('Notion API response:', error.response.data);
+      }
       res
         .status(500)
         .json({ success: false, error: 'Failed to exchange token' });
@@ -248,12 +269,15 @@ export class OAuthController {
       );
 
       const { access_token, refresh_token, expires_in } = tokenResponse.data;
+      const expiresAt = expires_in
+        ? Date.now() + expires_in * 1000
+        : undefined;
 
       UserService.updateUserToken(
         userId,
         access_token,
         refresh_token,
-        Date.now() + expires_in * 1000
+        expiresAt
       );
 
       res.json({

@@ -15,7 +15,8 @@ export type ContentBlock =
   | CodeBlock
   | ListBlock
   | TableBlock
-  | InLineCodeBlock;
+  | InLineCodeBlock
+  | ImageBlock;
 
 type BaseBlock = {
   id: string;
@@ -50,7 +51,14 @@ export type EditorState = {
     contentBlockId: string;
   } | null;
 };
+
 export type InLineCodeBlock = BaseBlock & {
   type: 'inlineCode';
   code: string;
+};
+
+export type ImageBlock = BaseBlock & {
+  type: 'image';
+  src: string;
+  alt?: string;
 };

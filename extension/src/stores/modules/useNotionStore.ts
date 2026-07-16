@@ -37,7 +37,8 @@ export const useNotionStore = create<NotionStore>((set, get) => ({
 
   setNotionPageId: async (id: string | null) => {
     const current = (await notionStorage.get()) || getDefaultStorage();
-    await notionStorage.set({ ...current, notionPageId: id });
+    const updated = { ...current, notionPageId: id };
+    await notionStorage.set(updated);
     set({ notionPageId: id });
   },
 
@@ -68,7 +69,8 @@ export const useNotionStore = create<NotionStore>((set, get) => ({
       set({ notionPageId: data.notionPageId });
     } else if (pages.length > 0) {
       const defaultPageId = pages[0].id;
-      await notionStorage.set({ ...data, notionPageId: defaultPageId });
+      const updated = { ...data, notionPageId: defaultPageId };
+      await notionStorage.set(updated);
       set({ notionPageId: defaultPageId });
     }
   },

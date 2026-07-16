@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import type { NotionPageData } from '../../../shared/types/notion';
+import { useNotionStore } from '../stores/index';
 
 interface UseNotionReturn {
   pages: NotionPageData[];
@@ -68,6 +69,7 @@ export function useNotion(): UseNotionReturn {
     async (userId?: string): Promise<NotionPageData[]> => {
       setIsLoading(true);
       setError(null);
+      console.log('[useNotion] getNotionPages called with userId:', userId);
 
       try {
         if (userId) {
@@ -82,6 +84,7 @@ export function useNotion(): UseNotionReturn {
           params.append('userId', userId);
         }
 
+        console.log('[useNotion] fetching pages with params:', params.toString());
         const response = await fetch(
           `http://localhost:8080/api/notion/list?${params}`
         );
@@ -146,6 +149,8 @@ export function useNotion(): UseNotionReturn {
   );
 
   const startAuth = useCallback(() => {
+    const { setUserId: storeSetUserId } = useNotionStore.getState();
+
     const authWindow = window.open(
       'http://localhost:8080/api/notion/auth',
       '_blank',
@@ -154,7 +159,9 @@ export function useNotion(): UseNotionReturn {
 
     const handleMessage = (event: MessageEvent) => {
       if (event.data.type === 'NOTION_AUTH_SUCCESS') {
-        setUserId(event.data.userId);
+        const userId = event.data.userId;
+        setUserId(userId);
+        storeSetUserId(userId);
         authWindow?.close();
         window.removeEventListener('message', handleMessage);
       }

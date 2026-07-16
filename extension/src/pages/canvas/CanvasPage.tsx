@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import {
   useBlockStore,
   useSessionStore,
+  useNotionStore,
 } from '../../stores/index';
 import Header from './components/Header';
 import CanvasArea from './components/CanvasArea';
@@ -11,10 +12,12 @@ import '../../styles/global.css';
 export default function CanvasPage() {
   const { initBlocks } = useBlockStore();
   const { conversationId, loadConversationId } = useSessionStore();
+  const { loadNotionPageId } = useNotionStore();
 
   useEffect(() => {
     loadConversationId();
-  }, [loadConversationId]);
+    loadNotionPageId();
+  }, [loadConversationId, loadNotionPageId]);
   useEffect(() => {
     if (conversationId) {
       console.log('[Canvas] 会话 ID 变化:', conversationId);
