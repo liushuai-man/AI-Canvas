@@ -24,6 +24,7 @@ function extractCodeFromPre(pre: HTMLElement) {
 
 export function extractChatGPT(): Block[] {
   const nodes = document.querySelectorAll('[data-message-author-role]');
+  console.log('[extractChatGPT] Found nodes:', nodes.length);
   return Array.from(nodes)
     .map((el) => {
       const rawRole = el.getAttribute('data-message-author-role');

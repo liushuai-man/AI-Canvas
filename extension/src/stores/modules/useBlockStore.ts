@@ -4,8 +4,6 @@ import type { Block } from '../../../../shared/types/block';
 import { useSessionStore } from './useSessionStore';
 import { reorderBlocks, reorderContentBlocks } from '../../hooks/useDragSort';
 
-
-
 export interface BlockStore {
   blocks: Block[];
   blockMap: Record<string, Block[]>;
@@ -20,7 +18,11 @@ export interface BlockStore {
   selectAllBlocks: () => void;
   clearSelection: () => void;
   reorderBlocks: (activeId: string, overId: string) => void;
-  reorderContentBlocks: (blockId: string, activeId: string, overId: string) => void;
+  reorderContentBlocks: (
+    blockId: string,
+    activeId: string,
+    overId: string
+  ) => void;
 }
 
 const blockStorage = createStorage<Record<string, Block[]>>('ai-canvas-blocks');
@@ -31,10 +33,19 @@ export const useBlockStore = create<BlockStore>((set, get) => ({
   selectedBlockIds: new Set(),
   initBlocks: async () => {
     const sessionId = useSessionStore.getState().conversationId;
-    if (!sessionId) return;
+    if (!sessionId) {
+      console.log('[BlockStore] initBlocks: No sessionId, skipping');
+      return;
+    }
     const data = await blockStorage.get();
     const map = data || {};
     const currentBlocks = map[sessionId] || [];
+    console.log('[BlockStore] initBlocks: sessionId =', sessionId);
+    console.log(
+      '[BlockStore] initBlocks: blocks count =',
+      currentBlocks.length
+    );
+    console.log('[BlockStore] initBlocks: available keys =', Object.keys(map));
     set({
       blocks: currentBlocks,
       blockMap: map,
@@ -140,18 +151,13 @@ export const useBlockStore = create<BlockStore>((set, get) => ({
     })),
 
   clearSelection: () => set({ selectedBlockIds: new Set() }),
- reorderBlocks: (activeId, overId) =>
-  set(state => ({
-    blocks: reorderBlocks(state.blocks, activeId, overId)
-  })),
+  reorderBlocks: (activeId, overId) =>
+    set((state) => ({
+      blocks: reorderBlocks(state.blocks, activeId, overId),
+    })),
 
   reorderContentBlocks: (blockId, activeId, overId) =>
-    set(state => ({
-      blocks: reorderContentBlocks(
-        state.blocks,
-        blockId,
-        activeId,
-        overId
-      )
+    set((state) => ({
+      blocks: reorderContentBlocks(state.blocks, blockId, activeId, overId),
     })),
 }));

@@ -16,9 +16,15 @@ export default function SaveNotion({ onGoNotion }: SaveNotionProps) {
       alert('请先选择一个 Notion 页面');
       return;
     }
+    // 从 Block[] 中提取 ContentBlock[]
+    const contentBlocks = blocks.flatMap((block) => block.contentBlocks);
+    if (contentBlocks.length === 0) {
+      alert('没有可保存的内容');
+      return;
+    }
     const success = await handleSaveNotion(
       notionPageId,
-      blocks,
+      contentBlocks,
       userId || undefined
     );
     if (success) {
