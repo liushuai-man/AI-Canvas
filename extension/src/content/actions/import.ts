@@ -6,22 +6,17 @@ import { getConversationId } from '../../utils/conversationId';
 const blockStorage = createStorage<Record<string, Block[]>>('ai-canvas-blocks');
 
 export async function importConversation() {
-  console.log('[import] Starting import...');
   const ai = detectAI();
-  console.log('[import] Detected AI:', ai);
   if (!ai) return 0;
   const extractor = extractorMap[ai];
   if (!extractor) return 0;
   const newBlocks = extractor();
-  console.log('[import] Extracted blocks:', newBlocks.length);
   const id = getConversationId();
-  console.log('[import] Conversation ID:', id);
   const map = (await blockStorage.get()) || {};
   const oldBlocks = map[id] || [];
   const merged = mergeBlocks(oldBlocks, newBlocks);
   map[id] = merged;
   await blockStorage.set(map);
-  console.log('[import] Total blocks:', merged.length);
   return merged.length;
 }
 

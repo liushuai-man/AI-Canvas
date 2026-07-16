@@ -14,7 +14,6 @@ export default function PopupPage() {
   const { loadNotionPageId } = useNotionStore();
   const { exportMD, exportTxt, exportPdf, exportHtml } = useExport(blocks);
   const messageCount = blocks.length;
-  console.log('[Popup Canvas] blocks:', blocks);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const init = async () => {
@@ -22,7 +21,6 @@ export default function PopupPage() {
       await initBlocks();
       await loadNotionPageId();
       setLoading(false);
-      console.log('[Popup Canvas] blocks:', blocks);
     };
 
     init();

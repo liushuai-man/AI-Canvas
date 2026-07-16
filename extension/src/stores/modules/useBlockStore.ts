@@ -33,19 +33,10 @@ export const useBlockStore = create<BlockStore>((set, get) => ({
   selectedBlockIds: new Set(),
   initBlocks: async () => {
     const sessionId = useSessionStore.getState().conversationId;
-    if (!sessionId) {
-      console.log('[BlockStore] initBlocks: No sessionId, skipping');
-      return;
-    }
+    if (!sessionId) return;
     const data = await blockStorage.get();
     const map = data || {};
     const currentBlocks = map[sessionId] || [];
-    console.log('[BlockStore] initBlocks: sessionId =', sessionId);
-    console.log(
-      '[BlockStore] initBlocks: blocks count =',
-      currentBlocks.length
-    );
-    console.log('[BlockStore] initBlocks: available keys =', Object.keys(map));
     set({
       blocks: currentBlocks,
       blockMap: map,

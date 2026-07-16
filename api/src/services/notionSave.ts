@@ -50,7 +50,6 @@ export class NotionService {
     const notion = this.getClient(accessToken);
 
     try {
-      // 先将 ContentBlock 转换为 Notion Block 格式
       const notionBlocks = toNotionBlocks(blocks);
 
       if (notionBlocks.length === 0) {

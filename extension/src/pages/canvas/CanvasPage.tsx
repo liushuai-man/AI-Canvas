@@ -15,12 +15,10 @@ export default function CanvasPage() {
   const { loadNotionPageId } = useNotionStore();
 
   useEffect(() => {
-    console.log('[Canvas] Initializing...');
     loadConversationId();
     loadNotionPageId();
-  }, [loadConversationId, loadNotionPageId]);
+  }, []);
   useEffect(() => {
-    console.log('[Canvas] conversationId changed:', conversationId);
     if (conversationId) {
       initBlocks();
     }
@@ -29,15 +27,11 @@ export default function CanvasPage() {
   useEffect(() => {
     const listener = (changes: any, areaName: string) => {
       if (areaName !== 'local') return;
-      console.log('[Canvas] Storage changed:', Object.keys(changes));
       if (changes['ai-canvas-session']) {
-        console.log('[Canvas] Session changed, reloading...');
         loadConversationId();
       }
       if (changes['ai-canvas-blocks']) {
-        // 只有当 conversationId 存在时才重新加载 blocks
         const currentSessionId = useSessionStore.getState().conversationId;
-        console.log('[Canvas] Blocks changed, currentSessionId:', currentSessionId);
         if (currentSessionId) {
           initBlocks();
         }

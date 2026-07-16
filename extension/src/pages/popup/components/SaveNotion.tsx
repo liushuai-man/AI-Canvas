@@ -1,4 +1,5 @@
-import { Database, Save, LogIn, LogOut } from 'lucide-react';
+import { useState } from 'react';
+import { Database, Save, LogIn, LogOut, CheckCircle } from 'lucide-react';
 import { useNotionStore, useBlockStore } from '../../../stores/index';
 import { useNotion } from '../../../hooks/useNotion';
 
@@ -10,6 +11,7 @@ export default function SaveNotion({ onGoNotion }: SaveNotionProps) {
   const { notionPageId, userId, setUserId } = useNotionStore();
   const { handleSaveNotion, startAuth, logout, isLoading } = useNotion();
   const { blocks } = useBlockStore();
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   const handleSave = async () => {
     if (!notionPageId) {
@@ -22,13 +24,21 @@ export default function SaveNotion({ onGoNotion }: SaveNotionProps) {
       alert('没有可保存的内容');
       return;
     }
+    // 添加标题 block
+    const titleBlock = {
+      id: crypto.randomUUID(),
+      type: 'text' as const,
+      content: `AI Canvas 导出 - ${new Date().toLocaleString()}`,
+    };
+    const blocksWithTitle = [titleBlock, ...contentBlocks];
     const success = await handleSaveNotion(
       notionPageId,
-      contentBlocks,
+      blocksWithTitle,
       userId || undefined
     );
     if (success) {
-      alert('保存成功！');
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 2000);
     }
   };
 
@@ -92,11 +102,24 @@ export default function SaveNotion({ onGoNotion }: SaveNotionProps) {
           </button>
           <button
             onClick={handleSave}
-            disabled={isLoading || !notionPageId}
-            className="flex items-center justify-center gap-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white rounded-lg text-sm font-medium transition-colors"
+            disabled={isLoading || !notionPageId || saveSuccess}
+            className={`flex items-center justify-center gap-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+              saveSuccess
+                ? 'bg-green-500 text-white'
+                : 'bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white'
+            }`}
           >
-            <Save size={14} />
-            {isLoading ? '保存中...' : '保存'}
+            {saveSuccess ? (
+              <>
+                <CheckCircle size={14} />
+                已保存
+              </>
+            ) : (
+              <>
+                <Save size={14} />
+                {isLoading ? '保存中...' : '保存'}
+              </>
+            )}
           </button>
         </div>
       )}

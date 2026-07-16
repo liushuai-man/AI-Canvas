@@ -25,7 +25,7 @@ const ContentScript = {
     init();
     const firstId = getConversationId();
 
-    if (firstId) {
+    if (firstId && firstId !== 'temp') {
       lastId = firstId;
       await useSessionStore.getState().setConversationId(firstId);
       await useBlockStore.getState().initBlocks();
