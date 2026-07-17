@@ -9,6 +9,6 @@ export const env = {
   notionClientSecret: process.env.NOTION_CLIENT_SECRET || '',
   notionRedirectUri:
     process.env.NOTION_REDIRECT_URI ||
-    'http://localhost:8080/api/notion/callback',
+    'http://120.55.2.225/api/notion/callback',
   sessionSecret: process.env.SESSION_SECRET || 'your-secret-key-here',
 };

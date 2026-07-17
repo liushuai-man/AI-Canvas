@@ -46,11 +46,12 @@ Thumbs.db
 .idea/
 
 # =========================
-# Extension（你这个项目重点）
+# Extension
 # =========================
 extension/.output/
 extension/.wxt/
 extension/dist/
+
 # =========================
 # API（后端）
 # =========================

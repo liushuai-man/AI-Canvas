@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import type { NotionPageData } from '../../../shared/types/notion';
 import { useNotionStore } from '../stores/index';
+import { API_BASE_URL } from '../config/env';
 
 interface UseNotionReturn {
   pages: NotionPageData[];
@@ -29,7 +30,7 @@ export function useNotion(): UseNotionReturn {
   const refreshToken = useCallback(async (userId: string): Promise<boolean> => {
     try {
       const response = await fetch(
-        'http://localhost:8080/api/notion/refresh-token',
+        `${API_BASE_URL}/api/notion/refresh-token`,
         {
           method: 'POST',
           headers: {
@@ -50,7 +51,7 @@ export function useNotion(): UseNotionReturn {
     async (userId: string): Promise<boolean> => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/notion/user/${userId}`
+          `${API_BASE_URL}/api/notion/user/${userId}`
         );
         const data = await response.json();
 
@@ -69,7 +70,6 @@ export function useNotion(): UseNotionReturn {
     async (userId?: string): Promise<NotionPageData[]> => {
       setIsLoading(true);
       setError(null);
-      console.log('[useNotion] getNotionPages called with userId:', userId);
 
       try {
         if (userId) {
@@ -84,9 +84,8 @@ export function useNotion(): UseNotionReturn {
           params.append('userId', userId);
         }
 
-        console.log('[useNotion] fetching pages with params:', params.toString());
         const response = await fetch(
-          `http://localhost:8080/api/notion/list?${params}`
+          `${API_BASE_URL}/api/notion/list?${params}`
         );
         const data = await response.json();
 
@@ -123,7 +122,7 @@ export function useNotion(): UseNotionReturn {
           }
         }
 
-        const response = await fetch('http://localhost:8080/api/notion/save', {
+        const response = await fetch(`${API_BASE_URL}/api/notion/save`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -152,7 +151,7 @@ export function useNotion(): UseNotionReturn {
     const { setUserId: storeSetUserId } = useNotionStore.getState();
 
     const authWindow = window.open(
-      'http://localhost:8080/api/notion/auth',
+      `${API_BASE_URL}/api/notion/auth`,
       '_blank',
       'width=600,height=600'
     );
@@ -172,7 +171,7 @@ export function useNotion(): UseNotionReturn {
 
   const logout = useCallback(async (userId: string): Promise<void> => {
     try {
-      await fetch(`http://localhost:8080/api/notion/user/${userId}`, {
+      await fetch(`${API_BASE_URL}/api/notion/user/${userId}`, {
         method: 'DELETE',
       });
       setUserId(null);
@@ -186,7 +185,7 @@ export function useNotion(): UseNotionReturn {
     async (userId: string): Promise<boolean> => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/notion/user/${userId}`
+          `${API_BASE_URL}/api/notion/user/${userId}`
         );
         const data = await response.json();
 
