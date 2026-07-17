@@ -54,7 +54,7 @@ export default function SaveNotion({ onGoNotion }: SaveNotionProps) {
   };
 
   return (
-    <div className="mt-4 mb-4">
+    <div className="p-3">
       <div className="text-sm font-semibold text-gray-700 mb-2 flex items-center justify-between">
         <span className="flex items-center gap-1">
           保存到 Notion
@@ -103,7 +103,7 @@ export default function SaveNotion({ onGoNotion }: SaveNotionProps) {
           <button
             onClick={handleSave}
             disabled={isLoading || !notionPageId || saveSuccess}
-            className={`flex items-center justify-center gap-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+            className={`w-24 flex items-center justify-center gap-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
               saveSuccess
                 ? 'bg-green-500 text-white'
                 : 'bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white'

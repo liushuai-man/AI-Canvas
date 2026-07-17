@@ -71,7 +71,7 @@ export default function FloatingToolbar() {
         <SmartIcon type="notion" onClick={() => handleOpenNotion()} />
       </div>
       {openNotion && (
-        <div className="fixed bottom-12 left-1/2 -translate-x-1/2">
+        <div className="fixed bottom-12 left-1/2 -translate-x-1/2 w-80 bg-white rounded-xl shadow-lg border border-gray-200">
           {showPageSelector ? (
             <NotionPageSelector onBack={handleBackFromSelector} />
           ) : (
