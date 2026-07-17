@@ -79,8 +79,13 @@ export class OAuthController {
         expiresAt
       );
 
+      // 使用当前请求的 host构建回调地址
+      const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+      const host = req.headers['x-forwarded-host'] || req.headers.host;
+      const baseUrl = `${protocol}://${host}`;
+      
       res.redirect(
-        `http://localhost:8080/api/notion/auth-success?userId=${userId}`
+        `${baseUrl}/api/notion/auth-success?userId=${userId}`
       );
     } catch (error: any) {
       console.error('OAuth callback error:', error.message);
