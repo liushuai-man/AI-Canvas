@@ -2,7 +2,6 @@
 # Node_modules
 # =========================
 node_modules/
-pnpm-lock.yaml
 
 # =========================
 # Env（非常重要）
