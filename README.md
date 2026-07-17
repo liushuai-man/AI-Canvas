@@ -142,7 +142,7 @@ pnpm build
 1. 打开 Chrome/Edge 浏览器
 2. 地址栏输入 `chrome://extensions/` 并回车
 3. 开启右上角的"开发者模式"
-4. 点击"加载已解压的扩展程序"按钮
+4. 点击"加载未打包的扩展程序"按钮
 5. 选择解压后的扩展文件夹（或构建后的 `extension/.output/chrome-mv3` 目录）
 6. 扩展安装完成，可以在浏览器工具栏看到 AI Canvas 图标
 
@@ -274,11 +274,11 @@ docker compose restart
 
 ### Notion 接口
 
-| 方法 | 路径                        | 描述                 |
-| ---- | --------------------------- | -------------------- |
-| GET  | `/api/notion/pages`         | 获取 Notion 页面列表 |
-| POST | `/api/notion/save`          | 保存内容到 Notion    |
-| GET  | `/api/notion/oauth/callback`| OAuth 回调           |
+| 方法 | 路径                         | 描述                 |
+| ---- | ---------------------------- | -------------------- |
+| GET  | `/api/notion/pages`          | 获取 Notion 页面列表 |
+| POST | `/api/notion/save`           | 保存内容到 Notion    |
+| GET  | `/api/notion/oauth/callback` | OAuth 回调           |
 
 ---
 
