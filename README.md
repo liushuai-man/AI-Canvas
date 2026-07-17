@@ -111,6 +111,47 @@ AI Canvas/
 
 ---
 
+## 安装使用
+
+### 下载浏览器扩展
+
+#### 方式一：从 GitHub 下载（推荐）
+
+1. 访问 [AI Canvas Releases](https://github.com/liushuai-man/AI-Canvas/releases)
+2. 下载最新版本的 `extension.zip` 文件
+3. 解压下载的文件
+
+#### 方式二：从源码构建
+
+```bash
+# 克隆代码
+git clone https://github.com/liushuai-man/AI-Canvas.git
+cd AI-Canvas/extension
+
+# 安装依赖
+pnpm install
+
+# 构建扩展
+pnpm build
+```
+
+构建完成后，扩展文件位于 `extension/.output/chrome-mv3` 目录。
+
+### 安装到浏览器
+
+1. 打开 Chrome/Edge 浏览器
+2. 地址栏输入 `chrome://extensions/` 并回车
+3. 开启右上角的"开发者模式"
+4. 点击"加载已解压的扩展程序"按钮
+5. 选择解压后的扩展文件夹（或构建后的 `extension/.output/chrome-mv3` 目录）
+6. 扩展安装完成，可以在浏览器工具栏看到 AI Canvas 图标
+
+### 配置 API 服务
+
+扩展需要连接后端 API 服务才能使用完整功能。API 服务已部署在阿里云服务器上，无需额外配置。
+
+---
+
 ## 快速开始
 
 ### 本地开发

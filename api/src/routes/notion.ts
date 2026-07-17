@@ -4,6 +4,11 @@ import { OAuthController } from '../controllers/oauth.controller';
 
 const router = express.Router();
 
+// 健康检查端点
+router.get('/status', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 router.get('/list', NotionController.getNotionPages);
 router.post('/save', NotionController.saveToNotion);
 
